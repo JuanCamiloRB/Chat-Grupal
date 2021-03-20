@@ -1,0 +1,78 @@
+{% extends 'chat/index.html' %}
+{% block body %}
+<nav class="grey darken-3">
+    <div class="nav-wrapper container">
+      <a href="#" class="brand-logo">Chat</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="">{{ request.user.username }}</a></li>
+          <li><a href="{% url 'logout' %}"><i class="material-icons">power_settings_new</i></a></li>
+      </ul>
+    </div>
+</nav>
+    <div class="section" style="height: 80vh">
+    <div class="row">
+        <div class="col s3">
+        <div class="card">
+            <div class="collection">
+                {% for user in users %}
+
+                <a href="{% url 'chat' request.user.id user.id %}" id="user{{ user.id }}" class="collection-item row">
+                    <img src="https://previews.123rf.com/images/rashadashurov/rashadashurov1911/rashadashurov191101490/133749415-account-concept-blue-line-icon-simple-thin-element-on-dark-background-account-concept-outline-symbol.jpg" class="col s4">
+
+                    <div >
+
+                        <span class="title" style="font-weight: bolder">{{ user.username }} </span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        </div>
+        <div class="col s8">
+            <div class="card">
+            <div id="board" class="section  brown lighten-4" style="height: 68vh; padding: 5px; overflow-y: scroll">
+                {% block messages %}
+
+                {% endblock %}
+            </div>
+            <form id="chat-box" class="form-group {% block hide %}hide{% endblock %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col s11">
+                        <div class="input-field">
+                            <input id="id_message" name="message" type="text" placeholder="Ingresa tu mensaje..">
+                        </div>
+                    </div>
+                    <div class="col s1" style="line-height: 80px">
+                        <button class="waves-effect waves-teal btn-flat btn-sml" style="height:30px;width:15px"><i class="material-icons">check</i></button>
+                        <div class="input-icon">
+
+                             <input  type="file" class="right"   name="txtimage" id="txtimage">
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% load staticfiles %}
+    <script src="{% static 'js/chat.js' %}"></script>
+    <script>
+        // For receiving
+        sender_id = "{{ receiver.id }}";
+        receiver_id = "{{ request.user.id }}";
+
+        //For sending
+        $(function () {
+            scrolltoend();
+            $('#chat-box').on('submit', function (event) {
+                event.preventDefault();
+                var message = $('#id_message');
+                send('{{ request.user.username }}', '{{ receiver.username }}', message.val());
+                message.val('');
+            })
+        })
+    </script>
+{% endblock %}
